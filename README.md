@@ -4,10 +4,32 @@
 
 ## Introduction
 
-Rules:
-http://www.ultraboardgames.com/blokus/game-rules.php
+#### Game Components:
+* a board of 400 squares
+* 84 pieces in four different colors (21 pieces per color).
 
-https://entertainment.howstuffworks.com/leisure/brain-games/blokus.htm
+Each of the 21 pieces for a color is of a different shape.
+There are: 1 piece of only one square, 1 piece of two squares, 2 pieces of three squares, 5 pieces of four squares, and 12 pieces of five squares.
+
+#### Game Play:
+
+Each player chooses a color and places that set of 21 pieces in front of his/her side of the board. The order of play is as follows: blue, yellow, red, green.
+
+The first piece played by each player must cover a corner square.
+Each new piece must touch at least one other piece of the same color, but only at the corners. Pieces of the same color cannot be in contact along an edge.
+There are no restrictions on how many pieces of different colors may be in contact with each other.
+Once a piece has been placed on the board it cannot be moved during subsequent turns.
+
+#### End of the game:
+
+The game ends when all players are blocked from laying down any more of their pieces. This also includes any players who may have placed all of their pieces on the board.
+
+Scores are tallied, and the player with the highest score is the winner.
+
+Each player then counts the number of unit squares in his/her remaining pieces (1 unit square = -1 point).
+
+A player earns +15 points if all his/her pieces have been placed on the board plus 5 additional bonus points if the last piece placed on the board was the smallest piece (one square).
+
 
 ## Installation
 
@@ -24,13 +46,13 @@ $ cd src
 $ python run.py -h
 pygame 1.9.4
 Hello from the pygame community. https://www.pygame.org/contribute.html
-usage: run.py [-h] [-ww WIDTH] 
+usage: run.py [-h] [-ww WIDTH]
 
 optional arguments:
   -h, --help            show this help message and exit
 
 # Example:
-$ python run.py -g 1 -hh 20 -p k f
+$ python run.py -h
 ```
 
 ## Known Issues
@@ -52,7 +74,11 @@ Please follow the [PEP8](https://www.python.org/dev/peps/pep-0008/) coding style
 
 ## Reference
 
-1.
+1. http://www.ultraboardgames.com/blokus/game-rules.php
+
+2. https://entertainment.howstuffworks.com/leisure/brain-games/blokus.htm
+
+99. https://open.spotify.com/user/1124279316/playlist/0MJBni0UzdnML1amikx0Rc?si=lkGLwjNyQvC3V_yP5VBOmg
 
 
 ## Authors
