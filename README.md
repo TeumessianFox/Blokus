@@ -55,10 +55,6 @@ optional arguments:
 $ python run.py -h
 ```
 
-## Known Issues
-
-*
-
 ## Workflow
 
 Please follow the [Github Flow](https://guides.github.com/introduction/flow/) in this project.
