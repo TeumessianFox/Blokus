@@ -1,5 +1,5 @@
 import numpy as np
-from old_pieces import pieces
+from pieces import pieces
 import game_state
 
 color_order = ['blue', 'yellow', 'red', 'green']
@@ -17,8 +17,6 @@ class GlobalEngine:
 
         self.state = game_state.GameState(player_num, height, length)
 
+    def commit_move(self, piece, anchor):
 
-    def commit_move(self, move, rotation):
         return
-
-

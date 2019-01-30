@@ -11,6 +11,7 @@ class GameState:
 
         self.board = np.zeros((height, width))
         self.player_pieces_left = [np.arange(21), np.arange(21), np.arange(21), np.arange(21)]
+        self.last_piece_played = [None, None, None, None]
         self.round = 1
         self.players_turn = 1
         self.game_over = False
@@ -42,15 +43,34 @@ class GameState:
         s += '\no' + '-' * self.width + 'o\n'
         return s
 
-    def game_over(self):
-        for player in self.player_num:
+    def check_game_over(self):
+        for player in range(self.player_num):
             if self.possible_moves() is not None:
                 return False
         return True
 
+    def eval_game(self):
+        for player in self.player_num:
+            if len(self.player_pieces_left[player]) == 0:
+                self.scores[player] = 15
+                if self.last_piece_played == 0:
+                    self.scores[player] += 5
+            else:
+                score = 0
+                for piece_num in self.player_pieces_left[player]:
+                    piece = pieces[piece_num]
+                    for h in range(piece.shape[0]):
+                        for l in range(piece.shape[1]):
+                            if piece[h][l] != 0:
+                                score += 1
+                score = -score
+                self.scores[player] = score
+
+        return None
+
     def possible_moves(self):
         moves = list()
-        for piece_num in self.player_pieces_left[self.players_turn]:
+        for piece_num in self.player_pieces_left[self.players_turn - 1]:
             piece = pieces[piece_num]
             piece = self.change_piece_colour(piece)
             if piece_num == 0 or piece_num == 7 or piece_num == 20:
@@ -61,18 +81,38 @@ class GameState:
             elif piece_num == 1 or piece_num == 2 or piece_num == 4 or piece_num == 9:
                 for rotation in range(2):
                     rot_piece = np.rot90(piece, rotation)
-                    for x in range(self.height - rot_piece.shape[0] - 1):
-                        for y in range(self.width - rot_piece.shape[1] - 1):
+                    for x in range(self.height - rot_piece.shape[0] + 1):
+                        for y in range(self.width - rot_piece.shape[1] + 1):
                             if self.check_move(rot_piece, (x, y)):
                                 moves.append((piece_num, rot_piece, (x, y)))
             else:
                 for rotation in range(4):
                     rot_piece = np.rot90(piece, rotation)
-                    for x in range(self.height - rot_piece.shape[0] - 1):
-                        for y in range(self.width - rot_piece.shape[1] - 1):
+                    for x in range(self.height - rot_piece.shape[0] + 1):
+                        for y in range(self.width - rot_piece.shape[1] + 1):
                             if self.check_move(rot_piece, (x, y)):
                                 moves.append((piece_num, rot_piece, (x, y)))
         return moves
+
+    def commit_move(self, piece_num, piece, anchor):
+        if self.check_move(piece, anchor):
+            for x in range(piece.shape[0]):
+                for y in range(piece.shape[1]):
+                    xm = x + anchor[0]
+                    ym = y + anchor[1]
+                    if piece[x][y] != 0:
+                        self.board[xm][ym] = self.players_turn
+            self.last_piece_played[self.players_turn-1] = piece_num
+            if self.players_turn < 4:
+                self.players_turn += 1
+            else:
+                self.players_turn = 1
+                self.round += 1
+            if self.check_game_over():
+                self.game_over = True
+                self.eval_game()
+        else:
+            print("Error move not possible")
 
     def change_piece_colour(self, piece):
         for x in range(piece.shape[0]):
@@ -127,22 +167,15 @@ class GameState:
                     return False
                 else:
                     if piece[h][l] != 0 and self.board[hm][lm] != 0:
-                        print("Not free space")
                         return False
         return True
-
-
-def print_moves(all_moves):
-    print("##################")
-    for move in all_moves:
-        print(str(move[0]) + " | " + str(move[2]))
-    print("##################")
 
 
 if __name__ == '__main__':
     gs = GameState(4, 20, 20)
     print(gs)
     all_moves = gs.possible_moves()
-    print_moves(all_moves)
     print(len(all_moves))
+    gs.commit_move(all_moves[0][0], all_moves[0][1], all_moves[0][2])
+    print(gs)
 
