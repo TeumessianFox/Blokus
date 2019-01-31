@@ -52,6 +52,25 @@ class GameState:
                 return False
         return True
 
+    def eval_game(self):
+        for player in self.player_num:
+            if len(self.player_pieces_left[player]) == 0:
+                self.scores[player] = 15
+                if self.last_piece_played == 0:
+                    self.scores[player] += 5
+            else:
+                score = 0
+                for piece_num in self.player_pieces_left[player]:
+                    piece = pieces[piece_num]
+                    for h in range(piece.shape[0]):
+                        for l in range(piece.shape[1]):
+                            if piece[h][l] != 0:
+                                score += 1
+                score = -score
+                self.scores[player] = score
+
+        return None
+
     def possible_moves(self):
         moves = list()
         for piece_num in self.player_pieces_left[self.players_turn - 1]:
