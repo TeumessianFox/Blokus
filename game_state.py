@@ -11,7 +11,8 @@ class GameState:
         self.width = width
 
         self.board = np.zeros((height, width))
-        self.player_pieces_left = [np.arange(21), np.arange(21), np.arange(21), np.arange(21)]
+        self.player_pieces_left = [np.arange(21), np.arange(21),
+                                   np.arange(21), np.arange(21)]
         self.last_piece_played = [None, None, None, None]
         self.round = 1
         self.players_turn = 1
@@ -60,7 +61,8 @@ class GameState:
                     for y in range(self.width - piece.shape[1] + 1):
                         if self._check_move(piece, (x, y)):
                             moves.append((piece_num, piece, (x, y)))
-            elif piece_num == 1 or piece_num == 2 or piece_num == 4 or piece_num == 9:
+            elif piece_num == 1 or piece_num == 2 or \
+                    piece_num == 4 or piece_num == 9:
                 for rotation in range(2):
                     rot_piece = np.rot90(piece, rotation)
                     for x in range(self.height - rot_piece.shape[0] + 1):
@@ -123,7 +125,8 @@ class GameState:
         return piece
 
     def _check_move(self, piece, anchor):
-        if self._check_free_space(piece, anchor) and self._check_placement_rules(piece, anchor):
+        if self._check_free_space(piece, anchor) and \
+                self._check_placement_rules(piece, anchor):
             return True
         return False
 
@@ -136,20 +139,30 @@ class GameState:
                 lm = l + anchor[1]
                 # In case of the first round
                 if self.round == 1 and piece[h][l] != 0 and \
-                        ((hm == 0 and lm == 0) or (hm == 0 and lm == self.width - 1) or
-                         (hm == self.height - 1 and lm == 0) or (hm == self.height - 1 and lm == self.width - 1)):
+                        ((hm == 0 and lm == 0) or
+                         (hm == 0 and lm == self.width - 1) or
+                         (hm == self.height - 1 and lm == 0) or
+                         (hm == self.height - 1 and lm == self.width - 1)):
                     touch_corner = 1
-                if (hm - 1 < self.height and lm < self.width and self.board[hm - 1][lm] == self.players_turn) or \
-                        (hm + 1 < self.height and lm < self.width and self.board[hm + 1][lm] == self.players_turn) or \
-                        (hm < self.height and lm - 1 < self.width and self.board[hm][lm - 1] == self.players_turn) or \
-                        (hm < self.height and lm + 1 < self.width and self.board[hm][lm + 1] == self.players_turn):
+                if (hm - 1 < self.height and lm < self.width and
+                    self.board[hm - 1][lm] == self.players_turn) or \
+                        (hm + 1 < self.height and lm < self.width and
+                         self.board[hm + 1][lm] == self.players_turn) or \
+                        (hm < self.height and lm - 1 < self.width and
+                         self.board[hm][lm - 1] == self.players_turn) or \
+                        (hm < self.height and lm + 1 < self.width and
+                         self.board[hm][lm + 1] == self.players_turn):
                     return False
-                if (hm - 1 < self.height and lm - 1 < self.width and self.board[hm - 1][lm - 1] == self.players_turn) or \
-                        (hm + 1 < self.height and lm - 1 < self.width and self.board[hm + 1][
+                if (hm - 1 < self.height and lm - 1 < self.width and
+                    self.board[hm - 1][lm - 1] == self.players_turn) or \
+                        (hm + 1 < self.height and lm - 1 < self.width and
+                         self.board[hm + 1][
                             lm - 1] == self.players_turn) or \
-                        (hm - 1 < self.height and lm + 1 < self.width and self.board[hm - 1][
+                        (hm - 1 < self.height and lm + 1 < self.width and
+                         self.board[hm - 1][
                             lm + 1] == self.players_turn) or \
-                        (hm + 1 < self.height and lm + 1 < self.width and self.board[hm + 1][
+                        (hm + 1 < self.height and lm + 1 < self.width and
+                         self.board[hm + 1][
                             lm + 1] == self.players_turn):
                     touch_own_stone = 1
         if self.round == 1 and touch_corner == 0:
@@ -164,7 +177,8 @@ class GameState:
             for l in range(piece.shape[1]):
                 hm = h + anchor[0]
                 lm = l + anchor[1]
-                if piece[h][l] != 0 and ((hm < 0 or hm > self.height - 1) or (lm < 0 or lm > self.width - 1)):
+                if piece[h][l] != 0 and ((hm < 0 or hm > self.height - 1) or
+                                         (lm < 0 or lm > self.width - 1)):
                     return False
                 else:
                     if piece[h][l] != 0 and self.board[hm][lm] != 0:

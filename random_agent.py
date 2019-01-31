@@ -1,5 +1,5 @@
-from game_state import GameState
 import random
+
 
 class RandomAgent:
     def __init__(self, player_id):

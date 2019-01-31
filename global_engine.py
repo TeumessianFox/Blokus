@@ -7,7 +7,8 @@ color_order = ['blue', 'yellow', 'red', 'green']
 
 
 class GlobalEngine:
-    def __init__(self, player_num, block_size, activate_gui, height, length, window_height, window_length):
+    def __init__(self, player_num, block_size, activate_gui,
+                 height, length, window_height, window_length):
         self.player_num = player_num
         self.height = height
         self.length = length
@@ -39,10 +40,12 @@ class GlobalEngine:
         self.AIs.append(RandomAgent(4))
         print("AIs started!")
 
-    # each AI gets a deepcopy of the game state and has to return piece_num, piece, anchor
+    # each AI gets a deepcopy of the game state
+    # has to return piece_num, piece, anchor
     def pick_move(self):
         state_copy = copy.deepcopy(self.state)
-        piece_num, piece, anchor = self.AIs[self.player_num - 1].choose_move(state_copy)
+        piece_num, piece, anchor = self.AIs[self.player_num - 1]\
+            .choose_move(state_copy)
         return piece_num, piece, anchor
 
     def commit_move(self, piece_num, piece, anchor):
