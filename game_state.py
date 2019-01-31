@@ -170,13 +170,3 @@ class GameState:
                     if piece[h][l] != 0 and self.board[hm][lm] != 0:
                         return False
         return True
-
-
-if __name__ == '__main__':
-    gs = GameState(4, 20, 20)
-    print(gs)
-    all_moves = gs.possible_moves()
-    print(len(all_moves))
-    gs.commit_move(all_moves[0][0], all_moves[0][1], all_moves[0][2])
-    print(gs)
-

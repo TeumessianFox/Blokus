@@ -6,6 +6,6 @@ class RandomAgent:
         self.player_id = player_id
 
     def choose_move(self, game_state):
-        all_moves = game_state.possible_move()
+        all_moves = game_state.possible_moves()
         choice = random.choice(all_moves)
         return choice
