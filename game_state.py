@@ -18,6 +18,7 @@ class GameState:
         self.players_turn = 1
         self.game_over = False
         self.scores = [0, 0, 0, 0]
+        self.next_possible_moves = self.possible_moves()
 
     def __repr__(self):
         board = self.board
@@ -92,9 +93,20 @@ class GameState:
             else:
                 self.players_turn = 1
                 self.round += 1
+            self.next_possible_moves = self.possible_moves()
             if self.check_game_over():
                 self.game_over = True
                 self._eval_game()
+            while len(self.next_possible_moves) == 0 and not self.game_over:
+                if self.players_turn < 4:
+                    self.players_turn += 1
+                else:
+                    self.players_turn = 1
+                    self.round += 1
+                if self.check_game_over():
+                    self.game_over = True
+                    self._eval_game()
+                self.next_possible_moves = self.possible_moves()
         else:
             print("Error move not possible")
 
@@ -157,17 +169,20 @@ class GameState:
                     self.board[hm - 1][lm - 1] == self.players_turn) or \
                         (hm + 1 < self.height and lm - 1 < self.width and
                          self.board[hm + 1][
-                            lm - 1] == self.players_turn) or \
+                             lm - 1] == self.players_turn) or \
                         (hm - 1 < self.height and lm + 1 < self.width and
                          self.board[hm - 1][
-                            lm + 1] == self.players_turn) or \
+                             lm + 1] == self.players_turn) or \
                         (hm + 1 < self.height and lm + 1 < self.width and
                          self.board[hm + 1][
-                            lm + 1] == self.players_turn):
+                             lm + 1] == self.players_turn):
                     touch_own_stone = 1
-        if self.round == 1 and touch_corner == 0:
-            return False
-        elif touch_own_stone == 1:
+        if self.round == 1:
+            if touch_corner == 0:
+                return False
+            else:
+                return True
+        elif touch_own_stone == 0:
             return False
         else:
             return True

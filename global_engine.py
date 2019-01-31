@@ -26,10 +26,13 @@ class GlobalEngine:
         # gui = GUI(self.state, self.block_size)
         self.start_ais()
         while not self.state.game_over:
-            piece_num, piece, anchor = self.pick_move()
+            move = self.pick_move()
+            piece_num, piece, anchor = move
             self.commit_move(piece_num, piece, anchor)
             #  update gui
         # gui game end
+        print("Game_Over")
+        print(self.state.scores)
 
     # each AI needs to be an own class
     # each AIs start-up function will be called before the game started
@@ -44,9 +47,8 @@ class GlobalEngine:
     # has to return piece_num, piece, anchor
     def pick_move(self):
         state_copy = copy.deepcopy(self.state)
-        piece_num, piece, anchor = self.AIs[self.player_num - 1]\
-            .choose_move(state_copy)
-        return piece_num, piece, anchor
+        move = self.AIs[self.player_num - 1].choose_move(state_copy)
+        return move
 
     def commit_move(self, piece_num, piece, anchor):
         self.state.commit_move(piece_num, piece, anchor)

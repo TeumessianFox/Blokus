@@ -7,5 +7,8 @@ class RandomAgent:
 
     def choose_move(self, game_state):
         all_moves = game_state.possible_moves()
-        choice = random.choice(all_moves)
+        if len(all_moves) != 0:
+            choice = random.choice(all_moves)
+        else:
+            choice = None
         return choice
