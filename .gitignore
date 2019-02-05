@@ -40,3 +40,4 @@ Thumbs.db
 ##########
 *.xml
 *.idea/
+*.__pycache__/

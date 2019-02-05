@@ -1,6 +1,6 @@
 import game_state
 import copy
-# from GUI.gui import GUI
+from GUI.gui import GUI
 from random_agent import RandomAgent
 
 color_order = ['blue', 'yellow', 'red', 'green']
@@ -8,28 +8,29 @@ color_order = ['blue', 'yellow', 'red', 'green']
 
 class GlobalEngine:
     def __init__(self, player_num, block_size, activate_gui,
-                 height, length, window_height, window_length):
+                 height, width):
         self.player_num = player_num
         self.height = height
-        self.length = length
+        self.width = width
 
         self.activate_gui = activate_gui
         self.block_size = block_size
-        self.window_height = window_height
-        self.window_length = window_length
 
         self.AIs = list()
 
-        self.state = game_state.GameState(player_num, height, length)
+        self.state = game_state.GameState(player_num, height, width)
 
     def play_game(self):
-        # gui = GUI(self.state, self.block_size)
+        if self.activate_gui:
+            gui = GUI(self.block_size, self.height, self.width)
         self.start_ais()
         while not self.state.game_over:
             move = self.pick_move()
             piece_num, piece, anchor = move
             self.commit_move(piece_num, piece, anchor)
-            #  update gui
+            if self.activate_gui:
+                # update gui
+                gui.update_screen(self.state.board)
         # gui game end
         print("Game_Over")
         print(self.state.scores)
@@ -56,5 +57,5 @@ class GlobalEngine:
 
 
 if __name__ == '__main__':
-    ge = GlobalEngine(4, 20, 0, 20, 20, 400, 400)
+    ge = GlobalEngine(4, 20, 1, 20, 20)
     ge.play_game()

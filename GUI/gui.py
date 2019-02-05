@@ -62,9 +62,7 @@ class UIVariables:
 
 class GUI:
     # Get global engine and setup gui
-    def __init__(self, global_state, block_size):
-        self.global_state = global_state
-
+    def __init__(self, block_size, height, width):
         # Initial values
         self.blink = False
         self.pause = False
@@ -75,12 +73,12 @@ class GUI:
 
         self.block_size = block_size
 
-        self.screen_width = global_state.player_num * (global_state.width * block_size +
-                                                       4 * block_size + 80)
-        self.screen_height = 80 + global_state.height * block_size
-        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
+        self.screen_width = width * block_size + 100
+        self.screen_height = height * block_size + 50
+        self.screen = pygame.display.set_mode((self.screen_width,
+                                               self.screen_height))
         pygame.time.set_timer(pygame.USEREVENT, UIVariables.framerate * 10)
-        pygame.display.set_caption("Make Tetris Great Again")
+        pygame.display.set_caption("Blokus with noobs")
 
     # Draw block
     def _draw_block(self, x, y, color):
@@ -92,15 +90,16 @@ class GUI:
         inner_pad = self.block_size // 7
         pygame.draw.rect(
             self.screen,
-            get_brighter_color(color),
-            pygame.Rect(x+inner_pad, y+inner_pad, self.block_size-inner_pad*2, self.block_size-inner_pad*2),
+            self.get_brighter_color(color),
+            pygame.Rect(x+inner_pad, y+inner_pad, self.block_size-inner_pad*2,
+                        self.block_size-inner_pad*2),
             inner_pad
         )
         r, g, b = color
         if not (r == g and g == b):
             pygame.draw.rect(
                 self.screen,
-                get_brighter_color(color, 2),
+                self.get_brighter_color(color, 2),
                 pygame.Rect(x+1, y+1, 3, 3),
                 3
             )
@@ -111,70 +110,47 @@ class GUI:
             1
         )
 
+    def get_brighter_color(self, color, factor=1.2):
+        brighter_color = tuple([int(x * factor) if int(x * factor) < 255 else
+                                255 for x in color])
+        return brighter_color
+
     # Draw board of one player
-    def _draw_board(self, x_start, y_start, player_id):
-        board = self.global_state.engines[player_id].get_board()
-        for x in range(self.global_state.width):
-            for y in range(self.global_state.height):
-                dx = x_start + 4 * self.block_size + 40 + self.block_size * x
-                dy = y_start + 60 + self.block_size * y
+    def _draw_board(self, board):
+        for x in range(20):
+            for y in range(20):
+                dx = 50 + self.block_size * x
+                dy = 50 + self.block_size * y
                 self._draw_block(dx, dy, UIVariables.t_color[int(board[x][y])])
 
     # Draw score bar for one player
-    def _draw_score(self, x_start, y_start, player_id):
+    def _draw_score(self):
         # Draw sidebar
         pygame.draw.rect(
             self.screen,
             UIVariables.white,
-            pygame.Rect(x_start, y_start, x_start + self.screen_width / self.global_state.player_num,
-                        y_start + self.screen_height)
+            pygame.Rect(0, 0, self.screen_width, self.screen_height)
         )
 
         # Draw texts
-        text_player = UIVariables.h3.render(
-            f"P{player_id+1}: {self.global_state.players[player_id]}", 1, UIVariables.black)
-        text_hold = UIVariables.h5.render("HOLD", 1, UIVariables.black)
-        text_next = UIVariables.h5.render("NEXT", 1, UIVariables.black)
+        # text_player = UIVariables.h3.render(
+        #    f"P{player_id+1}: {self.global_state.players[player_id]}",
+        #    1, UIVariables.black)
 
         # Place texts
-        pad = 35
-        self.screen.blit(text_player, (x_start + 5 * self.block_size + 10, y_start + 20))
-        self.screen.blit(text_hold, (x_start + 15, y_start + pad + 5))
-        self.screen.blit(text_next, (x_start + 15, y_start + pad + 5 + 5 * self.block_size))
-        texts = [
-            "K.O.",
-            f"  {self.global_state.engine_states[player_id]['KO']}",
-            "Combo",
-            f"  {self.global_state.engine_states[player_id]['combo']}",
-            "Lines sent",
-            f"  {self.global_state.engine_states[player_id]['lines_sent']}",
-            "Lines cleared",
-            f"  {self.global_state.engine_states[player_id]['lines_cleared']}"
-        ]
-        for i, text in enumerate(texts):
-            if i % 2 == 0:
-                text_render = UIVariables.h5.render(text, 1, UIVariables.black)
-            else:
-                text_render = UIVariables.h4.render(text, 1, UIVariables.black)
-            self.screen.blit(
-                text_render, (x_start + 15, y_start + 20 + 10 * self.block_size + (i+1) * pad - (i % 2) * 20))
+        # self.screen.blit(text_player, (x_start + 5 * self.block_size + 10,
+        # y_start + 20))
 
     # Render all players screen
-    def _draw_all_screen(self):
+    def _draw_all_screen(self, board):
         # Background gray
         self.screen.fill(UIVariables.black)
 
-        if self.global_state.player_num > 4:
-            print("Max player number 4")
-            pygame.quit()
-            exit(10)
-
-        for t in range(0, self.global_state.player_num):
-            self._draw_one_screen(t * self.screen_width / self.global_state.player_num, 0, t)
+        self._draw_score()
+        self._draw_board(board)
         pygame.display.flip()
 
     # Updates the whole screen on call
-    def update_screen(self):
+    def update_screen(self, board):
         pygame.time.wait(UIVariables.framerate)
-        self._draw_all_screen()
-
+        self._draw_all_screen(board)

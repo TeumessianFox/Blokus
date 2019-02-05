@@ -175,7 +175,7 @@ class GameState:
                          (hm == self.height - 1 and lm == 0) or
                          (hm == self.height - 1 and lm == self.width - 1)):
                     touch_corner = 1
-                if (hm - 1 < self.height and lm < self.width and
+                if (0 < hm - 1 < self.height and lm < self.width and
                     self.board[hm - 1][lm] == self.players_turn) or \
                         (hm + 1 < self.height and lm < self.width and
                          self.board[hm + 1][lm] == self.players_turn) or \
@@ -184,12 +184,12 @@ class GameState:
                         (hm < self.height and lm + 1 < self.width and
                          self.board[hm][lm + 1] == self.players_turn):
                     return False
-                if (hm - 1 < self.height and lm - 1 < self.width and
+                if (0 < hm - 1 < self.height and 0 < lm - 1 < self.width and
                     self.board[hm - 1][lm - 1] == self.players_turn) or \
-                        (hm + 1 < self.height and lm - 1 < self.width and
+                        (hm + 1 < self.height and 0 < lm - 1 < self.width and
                          self.board[hm + 1][
                              lm - 1] == self.players_turn) or \
-                        (hm - 1 < self.height and lm + 1 < self.width and
+                        (0 < hm - 1 < self.height and lm + 1 < self.width and
                          self.board[hm - 1][
                              lm + 1] == self.players_turn) or \
                         (hm + 1 < self.height and lm + 1 < self.width and
