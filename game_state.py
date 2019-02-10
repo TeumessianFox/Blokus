@@ -11,14 +11,14 @@ class GameState:
         self.width = width
 
         self.board = np.zeros((height, width))
-        self.player_pieces_left = [np.arange(21), np.arange(21),
-                                   np.arange(21), np.arange(21)]
+        self.player_pieces_left = [np.arange(21).tolist(), np.arange(21).tolist(),
+                                   np.arange(21).tolist(), np.arange(21).tolist()]
         self.last_piece_played = [None, None, None, None]
         self.round = 1
         self.players_turn = 1
         self.game_over = False
         self.scores = [0, 0, 0, 0]
-        self.next_possible_moves = self.possible_moves()
+        self.next_possible_moves_current_player = self.possible_moves_current_player()
 
     def __repr__(self):
         board = self.board
@@ -46,12 +46,6 @@ class GameState:
         s += '\no' + '-' * self.width + 'o\n'
         return s
 
-    def check_game_over(self):
-        for player in range(self.player_num):
-            if self.possible_moves() is not None:
-                return False
-        return True
-
     def eval_game(self):
         for player in self.player_num:
             if len(self.player_pieces_left[player]) == 0:
@@ -68,10 +62,9 @@ class GameState:
                                 score += 1
                 score = -score
                 self.scores[player] = score
-
         return None
 
-    def possible_moves(self):
+    def possible_moves_current_player(self):
         moves = list()
         for piece_num in self.player_pieces_left[self.players_turn - 1]:
             piece = pieces[piece_num]
@@ -107,30 +100,30 @@ class GameState:
                     if piece[x][y] != 0:
                         self.board[xm][ym] = self.players_turn
             self.last_piece_played[self.players_turn-1] = piece_num
+            self.player_pieces_left[self.players_turn-1].remove(piece_num)
             if self.players_turn < 4:
                 self.players_turn += 1
             else:
                 self.players_turn = 1
                 self.round += 1
-            self.next_possible_moves = self.possible_moves()
-            if self.check_game_over():
-                self.game_over = True
-                self._eval_game()
-            while len(self.next_possible_moves) == 0 and not self.game_over:
+            self.next_possible_moves_current_player = self.possible_moves_current_player()
+            counter = 0
+            while len(self.next_possible_moves_current_player) == 0 and counter < 4:
                 if self.players_turn < 4:
                     self.players_turn += 1
                 else:
                     self.players_turn = 1
                     self.round += 1
-                if self.check_game_over():
+                counter += 1
+                if counter == 4:
                     self.game_over = True
                     self._eval_game()
-                self.next_possible_moves = self.possible_moves()
+                self.next_possible_moves_current_player = self.possible_moves_current_player()
         else:
             print("Error move not possible")
 
     def _eval_game(self):
-        for player in self.player_num:
+        for player in range(self.player_num):
             if len(self.player_pieces_left[player]) == 0:
                 self.scores[player] = 15
                 if self.last_piece_played == 0:
@@ -169,6 +162,8 @@ class GameState:
                 hm = h + anchor[0]
                 lm = l + anchor[1]
                 # In case of the first round
+                if piece[h][l] == 0:
+                    continue
                 if self.round == 1 and piece[h][l] != 0 and \
                         ((hm == 0 and lm == 0) or
                          (hm == 0 and lm == self.width - 1) or

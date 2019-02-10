@@ -1,5 +1,6 @@
 import game_state
 import copy
+import numpy as np
 from GUI.gui import GUI
 from random_agent import RandomAgent
 
@@ -23,6 +24,7 @@ class GlobalEngine:
     def play_game(self):
         if self.activate_gui:
             gui = GUI(self.block_size, self.height, self.width)
+            gui.update_screen(self.state)
         self.start_ais()
         while not self.state.game_over:
             move = self.pick_move()
@@ -30,10 +32,15 @@ class GlobalEngine:
             self.commit_move(piece_num, piece, anchor)
             if self.activate_gui:
                 # update gui
-                gui.update_screen(self.state.board)
+                gui.update_screen(self.state)
+            else:
+                print(self.state)
         # gui game end
         print("Game_Over")
         print(self.state.scores)
+        print("Player " + str(np.argmax(self.state.scores) + 1) + " has won!")
+        while 1:
+            continue
 
     # each AI needs to be an own class
     # each AIs start-up function will be called before the game started
@@ -53,9 +60,8 @@ class GlobalEngine:
 
     def commit_move(self, piece_num, piece, anchor):
         self.state.commit_move(piece_num, piece, anchor)
-        print(self.state)
 
 
 if __name__ == '__main__':
-    ge = GlobalEngine(4, 20, 1, 20, 20)
+    ge = GlobalEngine(4, 40, 1, 20, 20)
     ge.play_game()
