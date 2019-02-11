@@ -11,14 +11,17 @@ class GameState:
         self.width = width
 
         self.board = np.zeros((height, width))
-        self.player_pieces_left = [np.arange(21).tolist(), np.arange(21).tolist(),
-                                   np.arange(21).tolist(), np.arange(21).tolist()]
+        self.player_pieces_left = [np.arange(21).tolist(),
+                                   np.arange(21).tolist(),
+                                   np.arange(21).tolist(),
+                                   np.arange(21).tolist()]
         self.last_piece_played = [None, None, None, None]
         self.round = 1
         self.players_turn = 1
         self.game_over = False
         self.scores = [0, 0, 0, 0]
-        self.next_possible_moves_current_player = self.possible_moves_current_player()
+        self.next_possible_moves_current_player = \
+            self.possible_moves_current_player()
 
     def __repr__(self):
         board = self.board
@@ -106,9 +109,11 @@ class GameState:
             else:
                 self.players_turn = 1
                 self.round += 1
-            self.next_possible_moves_current_player = self.possible_moves_current_player()
+            self.next_possible_moves_current_player = \
+                self.possible_moves_current_player()
             counter = 0
-            while len(self.next_possible_moves_current_player) == 0 and counter < 4:
+            while len(self.next_possible_moves_current_player) == 0 \
+                    and counter < 4:
                 if self.players_turn < 4:
                     self.players_turn += 1
                 else:
@@ -118,7 +123,8 @@ class GameState:
                 if counter == 4:
                     self.game_over = True
                     self._eval_game()
-                self.next_possible_moves_current_player = self.possible_moves_current_player()
+                self.next_possible_moves_current_player = \
+                    self.possible_moves_current_player()
         else:
             print("Error move not possible")
 
@@ -157,6 +163,8 @@ class GameState:
     def _check_placement_rules(self, piece, anchor):
         touch_corner = 0
         touch_own_stone = 0
+        board_corner = [(0, 0), (0, self.width - 1), (self.height - 1, 0),
+                        (self.height - 1, self.width - 1)]
         for h in range(piece.shape[0]):
             for l in range(piece.shape[1]):
                 hm = h + anchor[0]
@@ -164,27 +172,24 @@ class GameState:
                 # In case of the first round
                 if piece[h][l] == 0:
                     continue
-                if self.round == 1 and piece[h][l] != 0 and \
-                        ((hm == 0 and lm == 0) or
-                         (hm == 0 and lm == self.width - 1) or
-                         (hm == self.height - 1 and lm == 0) or
-                         (hm == self.height - 1 and lm == self.width - 1)):
-                    touch_corner = 1
-                if (0 < hm - 1 < self.height and lm < self.width and
+                if self.round == 1 and piece[h][l] != 0:
+                    if (hm, lm) == board_corner[self.players_turn - 1]:
+                        touch_corner = 1
+                if (0 <= hm - 1 < self.height and lm < self.width and
                     self.board[hm - 1][lm] == self.players_turn) or \
                         (hm + 1 < self.height and lm < self.width and
                          self.board[hm + 1][lm] == self.players_turn) or \
-                        (hm < self.height and lm - 1 < self.width and
+                        (hm < self.height and 0 <= lm - 1 < self.width and
                          self.board[hm][lm - 1] == self.players_turn) or \
                         (hm < self.height and lm + 1 < self.width and
                          self.board[hm][lm + 1] == self.players_turn):
                     return False
-                if (0 < hm - 1 < self.height and 0 < lm - 1 < self.width and
+                if (0 <= hm - 1 < self.height and 0 <= lm - 1 < self.width and
                     self.board[hm - 1][lm - 1] == self.players_turn) or \
-                        (hm + 1 < self.height and 0 < lm - 1 < self.width and
+                        (hm + 1 < self.height and 0 <= lm - 1 < self.width and
                          self.board[hm + 1][
                              lm - 1] == self.players_turn) or \
-                        (0 < hm - 1 < self.height and lm + 1 < self.width and
+                        (0 <= hm - 1 < self.height and lm + 1 < self.width and
                          self.board[hm - 1][
                              lm + 1] == self.players_turn) or \
                         (hm + 1 < self.height and lm + 1 < self.width and

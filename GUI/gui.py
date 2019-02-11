@@ -2,7 +2,6 @@ import os
 import pygame
 from pieces import pieces, layout_anchor
 import numpy as np
-from game_state import GameState
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -140,7 +139,8 @@ class GUI:
                 if int(rep[x][y]) == 0:
                     self._draw_stone(dx, dy, UIVariables.white, size)
                 else:
-                    self._draw_stone(dx, dy, UIVariables.t_color[int(rep[x][y])], size)
+                    self._draw_stone(dx, dy,
+                                     UIVariables.t_color[int(rep[x][y])], size)
 
     # Draw game info in top area
     def _draw_top_bar(self, game_state):
@@ -162,10 +162,13 @@ class GUI:
 
         for player in range(game_state.player_num):
             text_player = UIVariables.h2.render(
-                "Player " + str(player + 1), 1, UIVariables.t_color[player + 1])
+                "Player " + str(player + 1), 1,
+                UIVariables.t_color[player + 1])
             self.screen.blit(text_player, start_points[player])
-            rep = self._get_pieces_left_rep(game_state.player_pieces_left[player], player)
-            self._draw_sidebar(rep, start_points[player][0], start_points[player][1] + 70, 15)
+            rep = self._get_pieces_left_rep(
+                game_state.player_pieces_left[player], player)
+            self._draw_sidebar(rep, start_points[player][0],
+                               start_points[player][1] + 70, 15)
 
     def _get_pieces_left_rep(self, pieces_left, player):
         rep = np.zeros((24, 21))
