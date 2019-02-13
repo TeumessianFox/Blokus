@@ -1,7 +1,6 @@
 import numpy as np
+import copy
 from pieces import pieces
-
-color_order = ['blue', 'yellow', 'red', 'green']
 
 
 class GameState:
@@ -49,6 +48,8 @@ class GameState:
         s += '\no' + '-' * self.width + 'o\n'
         return s
 
+    #####################################################################
+
     def eval_game(self):
         for player in self.player_num:
             if len(self.player_pieces_left[player]) == 0:
@@ -67,41 +68,94 @@ class GameState:
                 self.scores[player] = score
         return None
 
+    def find_empty_corners(self, player):
+        # For starting move
+        if self.round == 1:
+            board_corner = [(0, 0), (0, self.width - 1), (self.height - 1, 0),
+                            (self.height - 1, self.width - 1)]
+            return [board_corner[player - 1]]
+
+        # Find possible corners to place stones
+        empty_corners = list()
+        for h in range(self.height):
+            for w in range(self.width):
+                if self.board[h][w] == 0:
+                    if (0 <= h - 1 < self.height and w < self.width and
+                        self.board[h - 1][w] == player) or \
+                            (h + 1 < self.height and w < self.width and
+                             self.board[h + 1][w] == player) or \
+                            (h < self.height and 0 <= w - 1 < self.width and
+                             self.board[h][w - 1] == player) or \
+                            (h < self.height and w + 1 < self.width and
+                             self.board[h][w + 1] == player):
+                        continue
+                    if (0 <= h - 1 < self.height and
+                        0 <= w - 1 < self.width and
+                        self.board[h - 1][w - 1] == player) or \
+                            (h + 1 < self.height and
+                             0 <= w - 1 < self.width and
+                             self.board[h + 1][w - 1] == player) or \
+                            (0 <= h - 1 < self.height and
+                             w + 1 < self.width and
+                             self.board[h - 1][w + 1] == player) or \
+                            (h + 1 < self.height and
+                             w + 1 < self.width and
+                             self.board[h + 1][w + 1] == player):
+                        empty_corners.append((h, w))
+        return empty_corners
+
     def possible_moves_current_player(self):
         moves = list()
+        empty_corners = self.find_empty_corners(self.players_turn)
+
         for piece_num in self.player_pieces_left[self.players_turn - 1]:
             piece = pieces[piece_num]
             piece = self._change_piece_colour(piece)
             if piece_num == 0 or piece_num == 7 or piece_num == 20:
-                for x in range(self.height - piece.shape[0] + 1):
-                    for y in range(self.width - piece.shape[1] + 1):
-                        if self._check_move(piece, (x, y)):
-                            moves.append((piece_num, piece, (x, y)))
+                for h in range(self.height - piece.shape[0] + 1):
+                    for w in range(self.width - piece.shape[1] + 1):
+                        if self._check_move(piece, (h, w), empty_corners):
+                            moves.append((piece_num, piece, (h, w)))
             elif piece_num == 1 or piece_num == 2 or \
                     piece_num == 4 or piece_num == 9:
                 for rotation in range(2):
                     rot_piece = np.rot90(piece, rotation)
-                    for x in range(self.height - rot_piece.shape[0] + 1):
-                        for y in range(self.width - rot_piece.shape[1] + 1):
-                            if self._check_move(rot_piece, (x, y)):
-                                moves.append((piece_num, rot_piece, (x, y)))
+                    for h in range(self.height - rot_piece.shape[0] + 1):
+                        for w in range(self.width - rot_piece.shape[1] + 1):
+                            if self._check_move(rot_piece, (h, w),
+                                                empty_corners):
+                                moves.append((piece_num, rot_piece, (h, w)))
             else:
                 for rotation in range(4):
                     rot_piece = np.rot90(piece, rotation)
-                    for x in range(self.height - rot_piece.shape[0] + 1):
-                        for y in range(self.width - rot_piece.shape[1] + 1):
-                            if self._check_move(rot_piece, (x, y)):
-                                moves.append((piece_num, rot_piece, (x, y)))
+                    for h in range(self.height - rot_piece.shape[0] + 1):
+                        for w in range(self.width - rot_piece.shape[1] + 1):
+                            if self._check_move(rot_piece, (h, w),
+                                                empty_corners):
+                                moves.append((piece_num, rot_piece, (h, w)))
         return moves
 
+    # Returns the board after making a move
+    # Does NOT check if move is possible
+    def board_after_move(self, piece_num, piece, anchor):
+        board_copy = copy.deepcopy(self.board)
+        for h in range(piece.shape[0]):
+            for w in range(piece.shape[1]):
+                hm = h + anchor[0]
+                wm = w + anchor[1]
+                if piece[h][w] != 0:
+                    board_copy[hm][wm] = self.players_turn
+        return board_copy
+
     def commit_move(self, piece_num, piece, anchor):
-        if self._check_move(piece, anchor):
-            for x in range(piece.shape[0]):
-                for y in range(piece.shape[1]):
-                    xm = x + anchor[0]
-                    ym = y + anchor[1]
-                    if piece[x][y] != 0:
-                        self.board[xm][ym] = self.players_turn
+        empty_corners = self.find_empty_corners(self.players_turn)
+        if self._check_move(piece, anchor, empty_corners):
+            for h in range(piece.shape[0]):
+                for w in range(piece.shape[1]):
+                    hm = h + anchor[0]
+                    wm = w + anchor[1]
+                    if piece[h][w] != 0:
+                        self.board[hm][wm] = self.players_turn
             self.last_piece_played[self.players_turn-1] = piece_num
             self.player_pieces_left[self.players_turn-1].remove(piece_num)
             if self.players_turn < 4:
@@ -128,6 +182,8 @@ class GameState:
         else:
             print("Error move not possible")
 
+    #####################################################################
+
     def _eval_game(self):
         for player in range(self.player_num):
             if len(self.player_pieces_left[player]) == 0:
@@ -139,8 +195,8 @@ class GameState:
                 for piece_num in self.player_pieces_left[player]:
                     piece = pieces[piece_num]
                     for h in range(piece.shape[0]):
-                        for l in range(piece.shape[1]):
-                            if piece[h][l] != 0:
+                        for w in range(piece.shape[1]):
+                            if piece[h][w] != 0:
                                 score += 1
                 score = -score
                 self.scores[player] = score
@@ -148,73 +204,63 @@ class GameState:
         return None
 
     def _change_piece_colour(self, piece):
-        for x in range(piece.shape[0]):
-            for y in range(piece.shape[1]):
-                if piece[x][y] != 0:
-                    piece[x][y] = self.players_turn
+        for h in range(piece.shape[0]):
+            for w in range(piece.shape[1]):
+                if piece[h][w] != 0:
+                    piece[h][w] = self.players_turn
         return piece
 
-    def _check_move(self, piece, anchor):
-        if self._check_free_space(piece, anchor) and \
+    # Checks every placement rule for one move
+    def _check_move(self, piece, anchor, empty_corners):
+        if self._check_at_empty_corner(piece, anchor, empty_corners) and \
+                self._check_free_space(piece, anchor) and \
                 self._check_placement_rules(piece, anchor):
             return True
         return False
 
-    def _check_placement_rules(self, piece, anchor):
-        touch_corner = 0
-        touch_own_stone = 0
-        board_corner = [(0, 0), (0, self.width - 1), (self.height - 1, 0),
-                        (self.height - 1, self.width - 1)]
+    # Start placement check
+    # Checks if one viable empty corner is filled
+    def _check_at_empty_corner(self, piece, anchor, empty_corners):
         for h in range(piece.shape[0]):
-            for l in range(piece.shape[1]):
-                hm = h + anchor[0]
-                lm = l + anchor[1]
-                # In case of the first round
-                if piece[h][l] == 0:
+            for w in range(piece.shape[1]):
+                if piece[h][w] == 0:
                     continue
-                if self.round == 1 and piece[h][l] != 0:
-                    if (hm, lm) == board_corner[self.players_turn - 1]:
-                        touch_corner = 1
-                if (0 <= hm - 1 < self.height and lm < self.width and
-                    self.board[hm - 1][lm] == self.players_turn) or \
-                        (hm + 1 < self.height and lm < self.width and
-                         self.board[hm + 1][lm] == self.players_turn) or \
-                        (hm < self.height and 0 <= lm - 1 < self.width and
-                         self.board[hm][lm - 1] == self.players_turn) or \
-                        (hm < self.height and lm + 1 < self.width and
-                         self.board[hm][lm + 1] == self.players_turn):
-                    return False
-                if (0 <= hm - 1 < self.height and 0 <= lm - 1 < self.width and
-                    self.board[hm - 1][lm - 1] == self.players_turn) or \
-                        (hm + 1 < self.height and 0 <= lm - 1 < self.width and
-                         self.board[hm + 1][
-                             lm - 1] == self.players_turn) or \
-                        (0 <= hm - 1 < self.height and lm + 1 < self.width and
-                         self.board[hm - 1][
-                             lm + 1] == self.players_turn) or \
-                        (hm + 1 < self.height and lm + 1 < self.width and
-                         self.board[hm + 1][
-                             lm + 1] == self.players_turn):
-                    touch_own_stone = 1
-        if self.round == 1:
-            if touch_corner == 0:
-                return False
-            else:
-                return True
-        elif touch_own_stone == 0:
-            return False
-        else:
-            return True
+                hm = h + anchor[0]
+                wm = w + anchor[1]
+                if (hm, wm) in empty_corners:
+                    return True
+        return False
 
+    # Check if no own stone blocks the placement
+    def _check_placement_rules(self, piece, anchor):
+        for h in range(piece.shape[0]):
+            for w in range(piece.shape[1]):
+                hm = h + anchor[0]
+                wm = w + anchor[1]
+                # In case of the first round
+                if piece[h][w] == 0:
+                    continue
+                if (0 <= hm - 1 < self.height and wm < self.width and
+                    self.board[hm - 1][wm] == self.players_turn) or \
+                        (hm + 1 < self.height and wm < self.width and
+                         self.board[hm + 1][wm] == self.players_turn) or \
+                        (hm < self.height and 0 <= wm - 1 < self.width and
+                         self.board[hm][wm - 1] == self.players_turn) or \
+                        (hm < self.height and wm + 1 < self.width and
+                         self.board[hm][wm + 1] == self.players_turn):
+                    return False
+        return True
+
+    # Checks if all blocks are placed on empty fields
     def _check_free_space(self, piece, anchor):
         for h in range(piece.shape[0]):
-            for l in range(piece.shape[1]):
+            for w in range(piece.shape[1]):
                 hm = h + anchor[0]
-                lm = l + anchor[1]
-                if piece[h][l] != 0 and ((hm < 0 or hm > self.height - 1) or
-                                         (lm < 0 or lm > self.width - 1)):
+                wm = w + anchor[1]
+                if piece[h][w] != 0 and ((hm < 0 or hm > self.height - 1) or
+                                         (wm < 0 or wm > self.width - 1)):
                     return False
                 else:
-                    if piece[h][l] != 0 and self.board[hm][lm] != 0:
+                    if piece[h][w] != 0 and self.board[hm][wm] != 0:
                         return False
         return True

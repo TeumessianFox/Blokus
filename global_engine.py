@@ -3,6 +3,7 @@ import copy
 import numpy as np
 from GUI.gui import GUI
 from random_agent import RandomAgent
+from paul_agent import PaulsAgent
 
 color_order = ['blue', 'yellow', 'red', 'green']
 
@@ -45,7 +46,7 @@ class GlobalEngine:
     # each AI needs to be an own class
     # each AIs start-up function will be called before the game started
     def start_ais(self):
-        self.AIs.append(RandomAgent(1))
+        self.AIs.append(PaulsAgent(1))
         self.AIs.append(RandomAgent(2))
         self.AIs.append(RandomAgent(3))
         self.AIs.append(RandomAgent(4))
@@ -55,7 +56,7 @@ class GlobalEngine:
     # has to return piece_num, piece, anchor
     def pick_move(self):
         state_copy = copy.deepcopy(self.state)
-        move = self.AIs[self.player_num - 1].choose_move(state_copy)
+        move = self.AIs[self.state.players_turn - 1].choose_move(state_copy)
         return move
 
     def commit_move(self, piece_num, piece, anchor):
