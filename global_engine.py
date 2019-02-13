@@ -4,6 +4,7 @@ import numpy as np
 from GUI.gui import GUI
 from Agents.random_agent import RandomAgent
 from Agents.paul1_agent import Pauls1Agent
+from Agents.better_random_agent import BetterRandomAgent
 
 
 class GlobalEngine:
@@ -46,7 +47,7 @@ class GlobalEngine:
     # each AIs start-up function will be called before the game started
     def start_ais(self):
         self.AIs.append(Pauls1Agent(1))
-        self.AIs.append(RandomAgent(2))
+        self.AIs.append(BetterRandomAgent(2))
         self.AIs.append(RandomAgent(3))
         self.AIs.append(RandomAgent(4))
         print("AIs started!")

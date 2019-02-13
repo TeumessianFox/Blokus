@@ -11,7 +11,7 @@ class Pauls1Agent:
 
     def choose_move(self, game_state):
         # All possible moves
-        all_moves = game_state.possible_moves_current_player()
+        all_moves = game_state.next_possible_moves_current_player
 
         # Check for no possible move
         if len(all_moves) == 0:
