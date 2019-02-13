@@ -4,6 +4,7 @@ import random
 class RandomAgent:
     def __init__(self, player_id):
         self.player_id = player_id
+        self.name = "Random Bot"
 
     def choose_move(self, game_state):
         all_moves = game_state.possible_moves_current_player()

@@ -2,10 +2,8 @@ import game_state
 import copy
 import numpy as np
 from GUI.gui import GUI
-from random_agent import RandomAgent
-from paul_agent import PaulsAgent
-
-color_order = ['blue', 'yellow', 'red', 'green']
+from Agents.random_agent import RandomAgent
+from Agents.paul1_agent import Pauls1Agent
 
 
 class GlobalEngine:
@@ -23,10 +21,11 @@ class GlobalEngine:
         self.state = game_state.GameState(player_num, height, width)
 
     def play_game(self):
-        if self.activate_gui:
-            gui = GUI(self.block_size, self.height, self.width)
-            gui.update_screen(self.state)
         self.start_ais()
+        if self.activate_gui:
+            gui = GUI(self.block_size, self.height, self.width,
+                      [ai.name for ai in self.AIs])
+            gui.update_screen(self.state)
         while not self.state.game_over:
             move = self.pick_move()
             piece_num, piece, anchor = move
@@ -46,7 +45,7 @@ class GlobalEngine:
     # each AI needs to be an own class
     # each AIs start-up function will be called before the game started
     def start_ais(self):
-        self.AIs.append(PaulsAgent(1))
+        self.AIs.append(Pauls1Agent(1))
         self.AIs.append(RandomAgent(2))
         self.AIs.append(RandomAgent(3))
         self.AIs.append(RandomAgent(4))

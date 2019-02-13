@@ -3,9 +3,10 @@ from pieces import pieces
 from operator import itemgetter
 
 
-class PaulsAgent:
+class Pauls1Agent:
     def __init__(self, player_id):
         self.player_id = player_id
+        self.name = "Paul's Bot 1"
         print("Paul's bot ready")
 
     def choose_move(self, game_state):
@@ -50,6 +51,13 @@ class PaulsAgent:
             columns_covered = columns_covered_after - columns_covered_before
             move_score += rows_covered
             move_score += columns_covered
+
+            # Own corner difference
+            old_corners = len(game_state.find_empty_corners(
+                game_state.board, game_state.players_turn))
+            new_corners = len(game_state.find_empty_corners(
+                successor_board, game_state.players_turn))
+            move_score += (new_corners - old_corners)/2
 
             move_scores.append((move_score, move))
         choice = max(move_scores, key=itemgetter(0))

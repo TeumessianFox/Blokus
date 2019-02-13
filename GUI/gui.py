@@ -64,13 +64,15 @@ class UIVariables:
 
 class GUI:
     # Get global engine and setup gui
-    def __init__(self, block_size, height, width):
+    def __init__(self, block_size, height, width, names):
         # Initial values
         self.blink = False
         self.pause = False
         self.start = True
         self.game_over = False
         self.done = False
+
+        self.names = names
 
         self.block_size = block_size
 
@@ -162,7 +164,7 @@ class GUI:
 
         for player in range(game_state.player_num):
             text_player = UIVariables.h2.render(
-                "Player " + str(player + 1), 1,
+                self.names[player], 1,
                 UIVariables.t_color[player + 1])
             self.screen.blit(text_player, start_points[player])
             rep = self._get_pieces_left_rep(

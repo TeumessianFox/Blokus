@@ -68,7 +68,7 @@ class GameState:
                 self.scores[player] = score
         return None
 
-    def find_empty_corners(self, player):
+    def find_empty_corners(self, board, player):
         # For starting move
         if self.round == 1:
             board_corner = [(0, 0), (0, self.width - 1), (self.height - 1, 0),
@@ -79,34 +79,34 @@ class GameState:
         empty_corners = list()
         for h in range(self.height):
             for w in range(self.width):
-                if self.board[h][w] == 0:
+                if board[h][w] == 0:
                     if (0 <= h - 1 < self.height and w < self.width and
-                        self.board[h - 1][w] == player) or \
+                        board[h - 1][w] == player) or \
                             (h + 1 < self.height and w < self.width and
-                             self.board[h + 1][w] == player) or \
+                             board[h + 1][w] == player) or \
                             (h < self.height and 0 <= w - 1 < self.width and
-                             self.board[h][w - 1] == player) or \
+                             board[h][w - 1] == player) or \
                             (h < self.height and w + 1 < self.width and
-                             self.board[h][w + 1] == player):
+                             board[h][w + 1] == player):
                         continue
                     if (0 <= h - 1 < self.height and
                         0 <= w - 1 < self.width and
-                        self.board[h - 1][w - 1] == player) or \
+                        board[h - 1][w - 1] == player) or \
                             (h + 1 < self.height and
                              0 <= w - 1 < self.width and
-                             self.board[h + 1][w - 1] == player) or \
+                             board[h + 1][w - 1] == player) or \
                             (0 <= h - 1 < self.height and
                              w + 1 < self.width and
-                             self.board[h - 1][w + 1] == player) or \
+                             board[h - 1][w + 1] == player) or \
                             (h + 1 < self.height and
                              w + 1 < self.width and
-                             self.board[h + 1][w + 1] == player):
+                             board[h + 1][w + 1] == player):
                         empty_corners.append((h, w))
         return empty_corners
 
     def possible_moves_current_player(self):
         moves = list()
-        empty_corners = self.find_empty_corners(self.players_turn)
+        empty_corners = self.find_empty_corners(self.board, self.players_turn)
 
         for piece_num in self.player_pieces_left[self.players_turn - 1]:
             piece = pieces[piece_num]
@@ -148,7 +148,7 @@ class GameState:
         return board_copy
 
     def commit_move(self, piece_num, piece, anchor):
-        empty_corners = self.find_empty_corners(self.players_turn)
+        empty_corners = self.find_empty_corners(self.board, self.players_turn)
         if self._check_move(piece, anchor, empty_corners):
             for h in range(piece.shape[0]):
                 for w in range(piece.shape[1]):
