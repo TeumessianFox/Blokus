@@ -2,6 +2,8 @@ import random
 from pieces import pieces
 from operator import itemgetter
 
+import helper_func
+
 
 class Pauls1Agent:
     def __init__(self, player_id):
@@ -40,13 +42,13 @@ class Pauls1Agent:
             # Scoring:
             ##################################
             # For every block
-            move_score += self.move_blocks(move)
+            move_score += helper_func.move_blocks(move)
 
             # Amount of rows and columns covered
-            rows_covered_before, columns_covered_before = self.\
-                row_columns_covered(game_state.board, game_state.players_turn)
-            rows_covered_after, columns_covered_after = self.\
-                row_columns_covered(successor_board, game_state.players_turn)
+            rows_covered_before = helper_func.rows_covered(game_state.board, game_state.players_turn)
+            columns_covered_before = helper_func.columns_covered(game_state.board, game_state.players_turn)
+            rows_covered_after = helper_func.rows_covered(successor_board, game_state.players_turn)
+            columns_covered_after = helper_func.columns_covered(successor_board, game_state.players_turn)
             rows_covered = rows_covered_after - rows_covered_before
             columns_covered = columns_covered_after - columns_covered_before
             move_score += rows_covered
@@ -57,41 +59,14 @@ class Pauls1Agent:
                 game_state.board, game_state.players_turn))
             new_corners = len(game_state.find_empty_corners(
                 successor_board, game_state.players_turn))
-            move_score += (new_corners - old_corners)/2
+            move_score += (new_corners - old_corners)
+
+            # Sum of enemy corners
+
+            # Penetrate
+
+            # Area
 
             move_scores.append((move_score, move))
         choice = max(move_scores, key=itemgetter(0))
         return choice[1]
-
-    def row_columns_covered(self, board, player):
-        rows_covered = 0
-        columns_covered = 0
-
-        for r in range(board.shape[1]):
-            this_row = False
-            for c in range(board.shape[0]):
-                if board[c][r] == player:
-                    this_row = True
-                    break
-            if this_row:
-                rows_covered += 1
-
-        for c in range(board.shape[0]):
-            this_column = False
-            for r in range(board.shape[1]):
-                if board[c][r] == player:
-                    this_column = True
-                    break
-            if this_column:
-                columns_covered += 1
-
-        return rows_covered, columns_covered
-
-    def move_blocks(self, move):
-        piece = pieces[move[0]]
-        blocks = 0
-        for h in range(piece.shape[0]):
-            for l in range(piece.shape[1]):
-                if piece[h][l] != 0:
-                    blocks += 1
-        return blocks

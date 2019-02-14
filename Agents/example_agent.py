@@ -1,3 +1,9 @@
+# Example for a new Bot
+# helper_func.py may have useful functions
+# the Bot has to be added in the game_state.py
+# run game_state for testing
+# global_engine.py is useful for understanding the state representation
+
 class ExampleAgent:
     # self.name is required
     def __init__(self, player_id):
