@@ -40,7 +40,7 @@ class GlobalEngine:
         # gui game end
         print("Game_Over")
         print(self.state.scores)
-        print("Player " + str(np.argmax(self.state.scores) + 1) + " has won!")
+        print("Player " + str(np.argmax(self.state.scores) + 1) + " has won!\n")
         # while 1:
         #     continue
         return np.argmax(self.state.scores) + 1
@@ -49,7 +49,7 @@ class GlobalEngine:
     # each AIs start-up function will be called before the game started
     def start_ais(self):
         self.AIs.append(Pauls1Agent(1))
-        self.AIs.append(BetterRandomAgent(2))
+        self.AIs.append(RandomAgent(2))
         self.AIs.append(RandomAgent(3))
         self.AIs.append(RandomAgent(4))
         print("AIs started!")

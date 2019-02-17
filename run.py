@@ -25,5 +25,5 @@ if __name__ == '__main__':
         winner = ge.play_game()
         player_wins[winner - 1] += 1
     max_winner = np.argmax(player_wins)
-    print("\n \nPlayer " + str(max_winner + 1) + " has won " +
+    print("\n\nPlayer " + str(max_winner + 1) + " has won " +
           str(player_wins[max_winner]/args.game_num * 100) + "%")

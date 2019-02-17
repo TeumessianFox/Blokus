@@ -104,6 +104,7 @@ class GameState:
                         empty_corners.append((h, w))
         return empty_corners
 
+    # TODO: Improve piece placement aka. don't try to place everywhere use your brain
     def possible_moves_current_player(self):
         moves = list()
         empty_corners = self.find_empty_corners(self.board, self.players_turn)
