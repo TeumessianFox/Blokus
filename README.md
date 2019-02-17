@@ -43,9 +43,24 @@ git clone git@github.com:TeumessianFox/Blokus.git
 
 ```
 $ cd src
-$ python global_engine.py
+$ python run.py -h
 pygame 1.9.4
 Hello from the pygame community. https://www.pygame.org/contribute.html
+usage: global_engine.py [-h] [-ww WIDTH] [-hh HEIGHT] [-n GAME_NUM]
+                        [-kn KO_NUM_TO_WIN] [-p PLAYERS [PLAYERS ...]]
+                        [-b BLOCK_SIZE] [-g USE_GUI]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -n GAME_NUM, --game_num GAME_NUM
+                        Number of games
+  -g USE_GUI, --use_gui USE_GUI
+                        Active output to gui
+  -t USE_TERMINAL, --use_terminal USE_TERMINAL
+                        Active output to terminal
+
+# Example: 10 games, no output
+$ python run -n 10 -g 0
 ```
 
 ## Workflow
