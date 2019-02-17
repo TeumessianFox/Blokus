@@ -42,3 +42,10 @@ def move_blocks(move):
             if piece[h][l] != 0:
                 blocks += 1
     return blocks
+
+
+# For a given player returns all the other player numbers
+def other_players_num(player_num):
+    all_player = [1, 2, 3, 4]
+    all_player.remove(player_num)
+    return all_player

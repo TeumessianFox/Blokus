@@ -4,6 +4,7 @@
 # run game_state for testing
 # global_engine.py is useful for understanding the state representation
 
+
 class ExampleAgent:
     # self.name is required
     def __init__(self, player_id):

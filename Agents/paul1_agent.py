@@ -1,5 +1,4 @@
 import random
-from pieces import pieces
 from operator import itemgetter
 
 import helper_func
@@ -8,7 +7,7 @@ import helper_func
 class Pauls1Agent:
     def __init__(self, player_id):
         self.player_id = player_id
-        self.name = "Paul's Bot 1"
+        self.name = "Paul's Bot"
         print("Paul's bot ready")
 
     def choose_move(self, game_state):
@@ -45,10 +44,14 @@ class Pauls1Agent:
             move_score += helper_func.move_blocks(move)
 
             # Amount of rows and columns covered
-            rows_covered_before = helper_func.rows_covered(game_state.board, game_state.players_turn)
-            columns_covered_before = helper_func.columns_covered(game_state.board, game_state.players_turn)
-            rows_covered_after = helper_func.rows_covered(successor_board, game_state.players_turn)
-            columns_covered_after = helper_func.columns_covered(successor_board, game_state.players_turn)
+            rows_covered_before = helper_func.rows_covered(
+                game_state.board, game_state.players_turn)
+            columns_covered_before = helper_func.columns_covered(
+                game_state.board, game_state.players_turn)
+            rows_covered_after = helper_func.rows_covered(
+                successor_board, game_state.players_turn)
+            columns_covered_after = helper_func.columns_covered(
+                successor_board, game_state.players_turn)
             rows_covered = rows_covered_after - rows_covered_before
             columns_covered = columns_covered_after - columns_covered_before
             move_score += rows_covered
@@ -62,6 +65,15 @@ class Pauls1Agent:
             move_score += (new_corners - old_corners)
 
             # Sum of enemy corners
+            old_corners = 0
+            new_corners = 0
+            for enemy in helper_func.other_players_num(
+                    game_state.players_turn):
+                old_corners += len(game_state.find_empty_corners(
+                    game_state.board, enemy))
+                new_corners += len(game_state.find_empty_corners(
+                    successor_board, enemy))
+            move_score += (old_corners - new_corners)
 
             # Penetrate
 

@@ -9,11 +9,12 @@ from Agents.better_random_agent import BetterRandomAgent
 
 class GlobalEngine:
     def __init__(self, player_num, block_size, activate_gui,
-                 height, width):
+                 activate_terminal, height, width):
         self.player_num = player_num
         self.height = height
         self.width = width
 
+        self.activate_terminal = activate_terminal
         self.activate_gui = activate_gui
         self.block_size = block_size
 
@@ -34,14 +35,15 @@ class GlobalEngine:
             if self.activate_gui:
                 # update gui
                 gui.update_screen(self.state)
-            else:
+            elif self.activate_terminal:
                 print(self.state)
         # gui game end
         print("Game_Over")
         print(self.state.scores)
         print("Player " + str(np.argmax(self.state.scores) + 1) + " has won!")
-        while 1:
-            continue
+        # while 1:
+        #     continue
+        return np.argmax(self.state.scores) + 1
 
     # each AI needs to be an own class
     # each AIs start-up function will be called before the game started
@@ -64,5 +66,5 @@ class GlobalEngine:
 
 
 if __name__ == '__main__':
-    ge = GlobalEngine(4, 40, 1, 20, 20)
+    ge = GlobalEngine(4, 40, 1, 0, 20, 20)
     ge.play_game()
