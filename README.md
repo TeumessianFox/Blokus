@@ -1,6 +1,6 @@
 # Blokus
 
-*Add pun here*
+Block-us if you can
 
 ## Introduction
 
@@ -43,16 +43,9 @@ git clone git@github.com:TeumessianFox/Blokus.git
 
 ```
 $ cd src
-$ python run.py -h
+$ python global_engine.py
 pygame 1.9.4
 Hello from the pygame community. https://www.pygame.org/contribute.html
-usage: run.py [-h] [-ww WIDTH]
-
-optional arguments:
-  -h, --help            show this help message and exit
-
-# Example:
-$ python run.py -h
 ```
 
 ## Workflow
