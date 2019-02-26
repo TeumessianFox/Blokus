@@ -15,6 +15,7 @@ class GameState:
                                    np.arange(21).tolist(),
                                    np.arange(21).tolist()]
         self.last_piece_played = [None, None, None, None]
+        self.pieces = self._all_pieces_full()
         self.round = 1
         self.players_turn = 1
         self.game_over = False
@@ -104,36 +105,18 @@ class GameState:
                         empty_corners.append((h, w))
         return empty_corners
 
-    # TODO: Improve piece placement aka. don't try to place everywhere use your brain
     def possible_moves_current_player(self):
         moves = list()
         empty_corners = self.find_empty_corners(self.board, self.players_turn)
 
         for piece_num in self.player_pieces_left[self.players_turn - 1]:
-            piece = pieces[piece_num]
-            piece = self._change_piece_colour(piece)
-            if piece_num == 0 or piece_num == 7 or piece_num == 20:
+            all_piece = self.pieces[piece_num]
+            for piece in all_piece:
                 for h in range(self.height - piece.shape[0] + 1):
                     for w in range(self.width - piece.shape[1] + 1):
+                        piece = self._change_piece_colour(piece)
                         if self._check_move(piece, (h, w), empty_corners):
                             moves.append((piece_num, piece, (h, w)))
-            elif piece_num == 1 or piece_num == 2 or \
-                    piece_num == 4 or piece_num == 9:
-                for rotation in range(2):
-                    rot_piece = np.rot90(piece, rotation)
-                    for h in range(self.height - rot_piece.shape[0] + 1):
-                        for w in range(self.width - rot_piece.shape[1] + 1):
-                            if self._check_move(rot_piece, (h, w),
-                                                empty_corners):
-                                moves.append((piece_num, rot_piece, (h, w)))
-            else:
-                for rotation in range(4):
-                    rot_piece = np.rot90(piece, rotation)
-                    for h in range(self.height - rot_piece.shape[0] + 1):
-                        for w in range(self.width - rot_piece.shape[1] + 1):
-                            if self._check_move(rot_piece, (h, w),
-                                                empty_corners):
-                                moves.append((piece_num, rot_piece, (h, w)))
         return moves
 
     # Returns the board after making a move
@@ -184,6 +167,33 @@ class GameState:
             print("Error move not possible")
 
     #####################################################################
+
+    def _all_pieces_full(self):
+        all_pieces = list()
+        for piece_num, piece in enumerate(pieces):
+            this_piece = list()
+            if piece_num == 0 or piece_num == 7 or piece_num == 20:
+                this_piece.append(piece)
+            elif piece_num == 1 or piece_num == 2 or \
+                    piece_num == 4 or piece_num == 9:
+                for rotation in range(2):
+                    rot_piece = np.rot90(piece, rotation)
+                    this_piece.append(rot_piece)
+            else:
+                for rotation in range(4):
+                    rot_piece = np.rot90(piece, rotation)
+                    this_piece.append(rot_piece)
+                if piece_num == 5 or piece_num == 8 or \
+                        piece_num == 10 or piece_num == 11 or \
+                        piece_num == 12 or piece_num == 14 or \
+                        piece_num == 17 or piece_num == 18 or \
+                        piece_num == 19:
+                    mirror_piece = np.flip(piece, 1)
+                    for rotation in range(4):
+                        rot_piece = np.rot90(mirror_piece, rotation)
+                        this_piece.append(rot_piece)
+            all_pieces.append(this_piece)
+        return all_pieces
 
     def _eval_game(self):
         for player in range(self.player_num):
