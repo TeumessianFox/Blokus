@@ -183,6 +183,7 @@ class GameState:
                 for rotation in range(4):
                     rot_piece = np.rot90(piece, rotation)
                     this_piece.append(rot_piece)
+                # Include mirroring
                 if piece_num == 5 or piece_num == 8 or \
                         piece_num == 10 or piece_num == 11 or \
                         piece_num == 12 or piece_num == 14 or \
