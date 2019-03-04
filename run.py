@@ -1,6 +1,7 @@
 import argparse
 from global_engine import GlobalEngine
 import numpy as np
+import time
 
 
 def parse_args():
@@ -20,10 +21,13 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
     player_wins = [0, 0, 0, 0]
+    start_time = time.time()
     for i in range(args.game_num):
         ge = GlobalEngine(4, 40, args.use_gui, args.use_terminal, 20, 20)
         winner = ge.play_game()
         player_wins[winner - 1] += 1
+    elapsed_time = time.time() - start_time
+    print("\n\nTime elapsed: " + str(elapsed_time))
     max_winner = np.argmax(player_wins)
-    print("\n\nPlayer " + str(max_winner + 1) + " has won " +
+    print("Player " + str(max_winner + 1) + " has won " +
           str(player_wins[max_winner]/args.game_num * 100) + "%")
