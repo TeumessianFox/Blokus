@@ -112,11 +112,12 @@ class GameState:
         for piece_num in self.player_pieces_left[self.players_turn - 1]:
             all_piece = self.pieces[piece_num]
             for piece in all_piece:
-                for h in range(self.height - piece.shape[0] + 1):
-                    for w in range(self.width - piece.shape[1] + 1):
-                        piece = self._change_piece_colour(piece)
-                        if self._check_move(piece, (h, w), empty_corners):
-                            moves.append((piece_num, piece, (h, w)))
+                for empty_place in empty_corners:
+                    for h in range(piece.shape[0]):
+                        for w in range(piece.shape[1]):
+                            piece = self._change_piece_colour(piece)
+                            if self._check_move(piece, (empty_place[0] - h, empty_place[1] - w), empty_corners):
+                                moves.append((piece_num, piece, (empty_place[0] - h, empty_place[1] - w)))
         return moves
 
     # Returns the board after making a move
