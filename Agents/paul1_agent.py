@@ -34,7 +34,7 @@ class Pauls1Agent:
         for move in all_moves:
             move_score = 0
 
-            # Evaluate successor state after commiting this move
+            # Evaluate successor state after committing this move
             successor_board = game_state.board_after_move(move[0], move[1],
                                                           move[2])
 
@@ -43,41 +43,42 @@ class Pauls1Agent:
             # For every block
             move_score += helper_func.move_blocks(move)
 
-            # Amount of rows and columns covered
-            rows_covered_before = helper_func.rows_covered(
-                game_state.board, game_state.players_turn)
-            columns_covered_before = helper_func.columns_covered(
-                game_state.board, game_state.players_turn)
-            rows_covered_after = helper_func.rows_covered(
-                successor_board, game_state.players_turn)
-            columns_covered_after = helper_func.columns_covered(
-                successor_board, game_state.players_turn)
-            rows_covered = rows_covered_after - rows_covered_before
-            columns_covered = columns_covered_after - columns_covered_before
-            move_score += rows_covered
-            move_score += columns_covered
+            # First 9 rounds only play moves with more than 5 blocks
+            if move_score < 5 and game_state.round < 9:
+                move_scores.append((move_score, move))
+                continue
 
+            # Amount of rows and columns covered
+            if game_state.round < 8:
+                rows_covered_before = helper_func.rows_covered(
+                    game_state.board, game_state.players_turn)
+                columns_covered_before = helper_func.columns_covered(
+                    game_state.board, game_state.players_turn)
+                rows_covered_after = helper_func.rows_covered(
+                    successor_board, game_state.players_turn)
+                columns_covered_after = helper_func.columns_covered(
+                    successor_board, game_state.players_turn)
+                rows_covered = rows_covered_after - rows_covered_before
+                columns_covered = columns_covered_after - columns_covered_before
+                move_score += rows_covered
+                move_score += columns_covered
+
+            old_corners = game_state.find_all_player_empty_corners(
+                game_state.board)
+            new_corners = game_state.find_all_player_empty_corners(
+                successor_board)
             # Own corner difference
-            old_corners = len(game_state.find_empty_corners(
-                game_state.board, game_state.players_turn))
-            new_corners = len(game_state.find_empty_corners(
-                successor_board, game_state.players_turn))
-            move_score += (new_corners - old_corners)
+            move_score += (len(new_corners[game_state.players_turn - 1])
+                           - len(old_corners[game_state.players_turn - 1]))
 
             # Sum of enemy corners
-            old_corners = 0
-            new_corners = 0
+            enemy_old_corners = 0
+            enemy_new_corners = 0
             for enemy in helper_func.other_players_num(
                     game_state.players_turn):
-                old_corners += len(game_state.find_empty_corners(
-                    game_state.board, enemy))
-                new_corners += len(game_state.find_empty_corners(
-                    successor_board, enemy))
-            move_score += (old_corners - new_corners)
-
-            # Penetrate
-
-            # Area
+                enemy_old_corners += len(old_corners[enemy - 1])
+                enemy_new_corners += len(new_corners[enemy - 1])
+            move_score += (enemy_old_corners - enemy_new_corners)
 
             move_scores.append((move_score, move))
         choice = max(move_scores, key=itemgetter(0))
